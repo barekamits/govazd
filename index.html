@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+ body {
+  font-family: 'Playfair Display', serif;
+  background-color: #e8e0d6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* վերև */
+  padding: 40px 20px 20px; /* հեռավորություն վերևից */
+}
+        
+        .invitation-card {
+            background-color: #e8e0d6;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            padding: 40px 30px;
+            position: relative;
+        }
+        
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 400;
+            color: #2c2c2c;
+            letter-spacing: 0.1em;
+            margin-bottom: 60px;
+            line-height: 1.2;
+        }
+        
+        .date-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+            color: #2c2c2c;
+            font-weight: 400;
+        }
+        
+        .date-info::after {
+            content: '';
+            position: absolute;
+            width: 80%;
+            height: 1px;
+            background-color: #2c2c2c;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 30px;
+        }
+        
+        .couple-photo {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f0f0f0, #d0d0d0);
+            border-radius: 8px;
+            margin-bottom: 50px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f5f5f5"/><text x="200" y="150" text-anchor="middle" font-family="serif" font-size="16" fill="%23666">Couple Photo</text></svg>') center/cover;
+            filter: grayscale(100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
+            filter: grayscale(100%);
+        }
+        
+       #envelope {
+  position: relative;
+    width: 280px;
+    height: 180px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    margin-left: auto;
+    margin-right: auto;
+    top: -100px; /* այս թիվը փոքրացրու, որպեսզի envelope-ը վերև բարձրանա */
+    background-color: #BEBEBE;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.front {
+    position: absolute;
+    width: 0;
+    height: 0;
+    z-index: 3;
+}
+
+.flap {
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-bottom: 82px solid transparent;
+    border-top: 98px solid #7D7D7D; /* flap-ի մուգ մոխրագույն */
+    transform-origin: top;
+}
+
+.pocket {
+    border-left: 140px solid #BEBEBE;
+    border-right: 140px solid #BEBEBE;
+    border-bottom: 90px solid #A9A9A9; /* ներքևի տարբեր տոն */
+    border-top: 90px solid transparent;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+        
+        .letter {
+            position: relative;
+            background-color: #fff;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 90%;
+            top: 5%;
+            border-radius: 6px;
+            box-shadow: 0 2px 26px rgba(0, 0, 0, .12);
+        }
+        
+        .letter:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.00) 25%, rgba(215, 227, 239, 0.70) 55%, rgba(215, 227, 239, 1.00) 100%);
+        }
+        
+        .words {
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            height: 14%;
+            background-color: #eeeff0;
+        }
+        
+        .words.line1 {
+            top: 15%;
+            width: 20%;
+            height: 7%;
+        }
+        
+        .words.line2 {
+            top: 30%;
+        }
+        
+        .words.line3 {
+            top: 50%;
+        }
+        
+        .words.line4 {
+            top: 70%;
+        }
+        
+        .open .flap {
+            transform: rotatex(180deg);
+            transition: transform 0.4s ease, z-index 0.6s;
+            z-index: 1;
+        }
+        
+        .close .flap {
+            transform: rotatex(0deg);
+            transition: transform 0.4s 0.6s ease, z-index 1s;
+            z-index: 5;
+        }
+        
+        .close .letter {
+            transform: translatey(0px);
+            transition: transform 0.4s ease, z-index 1s;
+            z-index: 1;
+        }
+        
+        .open .letter {
+            transform: translatey(-60px);
+            transition: transform 0.4s 0.6s ease, z-index 0.6s;
+            z-index: 2;
+        }
+        
+      
+        .a1 {
+            left: 20%;
+            transform: scale(0.6);
+            opacity: 1;
+            animation: slideUp 4s linear 1, sideSway 2s  ease-in-out 4 alternate;
+            animation-fill-mode: forwards;
+            animation-delay: 0.7s;
+        }
+        
+        .a2 {
+            left: 55%;
+            transform: scale(1);
+            opacity: 1;
+            animation: slideUp 5s linear 1, sideSway 4s  ease-in-out 2 alternate;
+            animation-fill-mode: forwards;
+            animation-delay: 0.7s;
+        }
+        
+        .a3 {
+            left: 10%;
+            transform: scale(0.8);
+            opacity: 1;
+            animation: slideUp 7s linear 1, sideSway 2s  ease-in-out 6 alternate;
+            animation-fill-mode: forwards;
+            animation-delay: 0.7s;
+        }
+        
+        @keyframes slideUp {
+            0% {
+                top: 0;
+            }
+            100% {
+                top: -600px;
+            }
+        }
+        
+        @keyframes sideSway {
+            0% {
+                margin-left: 0px;
+            }
+            100% {
+                margin-left: 50px;
+            }
+        }
+        
+        .envelope-wrapper {
+            height: 380px;
+        }
+        
+      @keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+.disappear {
+    animation: fadeOut 1s ease forwards; /* 1 վայրկյանում անհետանա */
+}
+    /* Կոնտենտ */
+    .content {
+      display: none;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .content.show {
+      display: block;
+    }
+
+#music-btn {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transform: translateY(-430px);
+}
+
+    .image img {
+      width: 300px;
+       height: 200px;
+  cursor: pointer;
+  transform: translateY(-440px);
+    }
+  .ketagic{
+      width: 280px;
+       height: 200px;
+  cursor: pointer;
+  transform: translateY(-540px);
+  }
+  .location-wrapper {
+  position: relative;
+  height: 600px; /* scroll անելու տեղ թողնենք */
+  margin-top: -300px;
+}
+
+.location-icon {
+  width: 60px;
+  position: relative;
+  top: -470px;
+  left: 0;
+  transition: transform 0.1s linear;
+}
+
+/*pesai tun*/
+.card {
+  text-align: center;
+  padding: 0;
+  position: absolute; /* փոխիր relative-ից absolute */
+  max-width: 320px;
+  top:42%;
+  left: 30%;
+  transform: translateX(-50%); /* կենտրոնացնելու համար */
+   transform: scale(0.8); /* 80% չափով փոքրացնել */
+}
+    .time {
+      font-size: 50px;
+      color: rgba(0, 0, 0, 0.1); /* թափանցիկ մոխրագույն */
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 0;
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: bold;
+      color: #222;
+      margin-top: 60px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .desc {
+      font-size: 16px;
+      color: #333;
+      margin: 15px 0 30px;
+      line-height: 1.5;
+      z-index: 1;
+      position: relative;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: black;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: #f2f2f2;
+    }
+    .bride-house{
+  text-align: center;
+  padding: 0;
+  position: absolute; /* փոխիր relative-ից absolute */
+  max-width: 320px;
+  top:60%;
+  left:10%;
+  transform: translateX(-50%); /* կենտրոնացնելու համար */
+   transform: scale(0.8); /* 80% չափով փոքրացնել */
+}
+    .church-blok{
+  text-align: center;
+  padding: 0;
+  position: absolute; /* փոխիր relative-ից absolute */
+  max-width: 320px;
+  top:70%;
+  left:20%;
+  transform: translateX(-50%); /* կենտրոնացնելու համար */
+   transform: scale(0.8); /* 80% չափով փոքրացնել */
+}
+
+    .rest-blok{
+  text-align: center;
+  padding: 0;
+  position: absolute; /* փոխիր relative-ից absolute */
+  max-width: 320px;
+  top:83%;
+  left:10%;
+  transform: translateX(-50%); /* կենտրոնացնելու համար */
+   transform: scale(0.8); /* 80% չափով փոքրացնել */
+}
+.ketagic img {
+  position: relative;
+  z-index: 2; /* սրտիկի նկար */
+}
+
+.ketagic-bg {
+  position: absolute;
+  top: 97%;
+  left: -50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  z-index: 1; /* տակից */
+  opacity: 0.8; /* ցանկության դեպքում թափանցիկ */
+}
+/*dress-code*/
+.dress-code {
+  position: absolute;
+  top: 150%;
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Playfair Display', serif;
+  overflow: hidden;
+}
+
+/* Նախնական վիճակ (չտեսվող) */
+.dress-title,
+.dress-text,
+.dress-colors span {
+  opacity: 0;
+}
+
+/* Անիմացիաները կավելացվեն .animate դասով */
+.dress-title.animate {
+  animation: slideDown 1s forwards;
+}
+
+.dress-text.animate {
+  animation: slideDown 1s forwards 0.3s;
+}
+
+.dress-colors span.animate:nth-child(1) { animation: slideIn 0.6s forwards 0.6s; --start: -50px;}
+.dress-colors span.animate:nth-child(2) { animation: slideIn 0.6s forwards 0.7s; --start: 50px;}
+.dress-colors span.animate:nth-child(3) { animation: slideIn 0.6s forwards 0.8s; --start: -50px;}
+.dress-colors span.animate:nth-child(4) { animation: slideIn 0.6s forwards 0.9s; --start: 50px;}
+.dress-colors span.animate:nth-child(5) { animation: slideIn 0.6s forwards 1s; --start: -50px;}
+
+@keyframes slideDown {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideIn {
+  0% { opacity: 0; transform: translateX(var(--start)); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.dress-colors span {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+
+.dress-colors span:hover {
+  transform: scale(1.1);
+}
+ .calendar-container {
+  position: absolute;
+  top: 177%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+
+    .big-date {
+      font-size: 100px;
+      font-weight: 300;
+      color: rgba(0,0,0,0.1);
+      margin: 0;
+      line-height: 1;
+    }
+
+    .month-text {
+      font-size: 32px;
+      font-style: italic;
+      color: #2c3e50;
+      margin-top: -40px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    th {
+      font-weight: 400;
+      padding: 10px;
+      color: #666;
+    }
+
+    td {
+      width: 40px;
+      height: 40px;
+      padding: 5px;
+      color: #333;
+      position: relative;
+    }
+
+    .heart {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+      top: 68%;
+    }
+
+    .heart svg {
+      width: 100%;
+      height: 100%;
+      stroke: #2c3e50;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .heart span {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      font-size: 16px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+    #rsvpForm {
+  
+  position: absolute;
+  top: 190%; /* էստեղ էլ կարգավորես */
+  left: 15%;
+}
+
+      
+    /* RSVP ֆորմ */
+    .name-fields {
+      margin: var(--section-spacing) auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--small-spacing);
+      align-items: center;
+      max-width: 300px;
+      padding: 0 20px;
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-family: 'Montserratarm-Medium', sans-serif;
+      font-size: 16px;
+      color: #3B3B28;
+      background-color: white;
+      border: 1px solid #3B3B28;
+      border-radius: 25px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .name-input::placeholder {
+      color: #888;
+    }
+
+    .name-input:focus {
+      border-color: #4c4731;
+      box-shadow: 0 0 0 2px rgba(76, 71, 49, 0.1);
+    }
+
+    .button-wrapper {
+      margin-top: var(--element-spacing);
+      margin-bottom: var(--large-spacing);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn {
+      font-family: 'Montserratarm-Medium', sans-serif;
+      font-size: 22px;
+      color: white;
+      padding: 12px 45px;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-yes {
+      background-color: #4c4731;
+       margin-top: 20px; /* փոխիր թիվը՝ որքան ներքև իջնի */
+    }
+
+    .btn-no {
+      background-color: #7b685b;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn.selected {
+      opacity: 0.8;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Հաղորդագրություններ */
+    .confirmation-message {
+      position: fixed;
+      top: 145px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      font-family: 'Montserratarm-Medium', sans-serif;
+      font-size: 18px;
+      color: #4c4731;
+      text-align: center;
+      opacity: 0;
+      transition: all 0.5s ease;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 20px 30px;
+      border-radius: 20px;
+      border: 1px solid #4c4731;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+      max-width: 350px;
+      pointer-events: none;
+    }
+
+    .confirmation-message.show {
+      opacity: 1;
+      animation: slideInFromTop 0.6s ease-out;
+    }
+
+    .confirmation-message.hide {
+      animation: slideOutToTop 0.5s ease-in;
+    }
+
+    .error-message {
+      color: #d32f2f !important;
+      border-color: #d32f2f !important;
+      background-color: rgba(255, 235, 238, 0.95) !important;
+    }
+
+    @keyframes slideInFromTop {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes slideOutToTop {
+      from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-100px);
+      }
+    }
+
+    .success-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .message-title {
+      font-family: 'Kamavor', sans-serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+      color: #4c4731;
+    }
+
+    .message-text {
+      font-family: 'Montserratarm-Medium', sans-serif;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+   
+    </style>
+</head>
+<body>
+    <div class="invitation-card">
+        <h1 class="main-title">МЫ ЖЕНИМСЯ</h1>
+        
+        <div class="date-info">
+            <span>11 АВГУСТА</span>
+            <span>2025</span>
+        </div>
+        
+        <div class="couple-photo">
+            <div class="photo-placeholder">
+                <img src="https://uploads.onecompiler.io/43gpeysj6/43w7ncefy/couple6.png">
+            </div>
+        </div>
+        
+        <div class="envelope-wrapper">
+            <div id="envelope" class="close">
+                <div class="front flap"></div>
+                <div class="front pocket"></div>
+                <div class="letter">
+                    <div class="words line1"></div>
+                    <div class="words line2"></div>
+                    <div class="words line3"></div>
+                    <div class="words line4"></div>
+                </div>
+              
+            </div>
+        </div>
+    <!-- Հիմնական կոնտենտ -->
+  <div class="content" id="content">
+    <img id="music-btn" src="https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/play.png" alt="Play">
+    <audio id="bg-music" src="music.mp3"></audio>
+      <div class="image">
+    <img src="https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/removedmap.png" alt="Սիրտ">
+  </div>
+    <div class="ketagic">
+    <img src="https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/photo-removebg-preview.png" alt="Սիրտ">
+  </div>
+  <div class="location-wrapper">
+  <img src="https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/locloc.png" alt="Location" class="location-icon">
+</div>
+ <div class="card">
+    <div class="time">14:30</div>
+    <div class="title">ЦЕРЕМОНИЯ</div>
+    <div class="desc">
+      Вы станете свидетелями<br>
+      создания новой семьи —<br>
+      нашей семьи
+    </div>
+    <a href="#" class="btn">Открыть карту</a>
+  </div>
+<div class="bride-house">
+    <div class="time">14:30</div>
+    <div class="title">ЦЕРЕМОНИЯ</div>
+     <div class="desc">
+      Вы станете свидетелями<br>
+      создания новой семьи —<br>
+      нашей семьи
+    </div>
+  </div>
+<div class="church-blok">
+    <div class="time">14:30</div>
+    <div class="title">ЦЕРЕМОНИЯ</div>
+     <div class="desc">
+      Вы станете свидетелями<br>
+      создания новой семьи —<br>
+      нашей семьи
+    </div>
+  </div>
+  <div class="rest-blok">
+    <div class="time">14:30</div>
+    <div class="title">ЦЕРЕМОНИЯ</div>
+     <div class="desc">
+      Вы станете свидетелями<br>
+      создания новой семьи —<br>
+      нашей семьи
+    </div>
+  </div>
+ <div class="ketagic-bg">
+  <img src="https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/couple4.png" alt="Նկար">
+</div>
+<section class="dress-code">
+  <h1 class="dress-title"> Dress Code </h1>
+  <h2 class="dress-text">
+    Ուրախ կլինենք, եթե հետևեք մեր նախընտրած գունային երանգներին 
+  </h2>
+  
+  <div class="dress-colors">
+    <span style="background:#d4a5a5;"></span> <!-- վարդագույն -->
+    <span style="background:#f0cfcf;"></span> <!-- բաց վարդ -->
+    <span style="background:#f7e2d6;"></span> <!-- բեժ -->
+    <span style="background:#e4d8c3;"></span> <!-- բաց կրեմ -->
+    <span style="background:#c8b6a6;"></span> <!-- տաք նյուդ -->
+  </div>
+</section>
+  <div class="calendar-container">
+    <p class="big-date">15/06</p>
+    <p class="month-text">15 июня</p>
+
+    <table>
+      <tr>
+        <th>ПН</th>
+        <th>ВТ</th>
+        <th>СР</th>
+        <th>ЧТ</th>
+        <th>ПТ</th>
+        <th>СБ</th>
+        <th>ВС</th>
+      </tr>
+      <tr>
+        <td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td>
+      </tr>
+      <tr>
+        <td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td>
+      </tr>
+      <tr>
+        <td>10</td><td>11</td><td>12</td><td>13</td><td>14</td>
+        <td class="heart">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21s-6-4.35-9-8.7C-1.5 6.6 4.5 0 12 5.25 
+                     19.5 0 25.5 6.6 21 12.3c-3 4.35-9 8.7-9 8.7z"/>
+          </svg>
+          <span>15</span>
+        </td>
+        <td>16</td>
+      </tr>
+      <tr>
+        <td>17</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td>
+      </tr>
+      <tr>
+        <td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td><td>30</td>
+      </tr>
+    </table>
+  </div>
+  
+  <!-- RSVP Form -->
+  <form id="rsvpForm" class="name-fields">
+    <input type="text" name="firstName" class="name-input" placeholder="Անուն" required>
+    <input type="text" name="lastName" class="name-input" placeholder="Ազգանուն" required>
+    <input type="hidden" name="response" id="responseInput">
+    
+    <div class="button-wrapper">
+      <button type="button" class="btn btn-yes" onclick="setResponseAndSubmit('ԳԱԼԻՍ ԵՄ')">ԳԱԼԻՍ ԵՄ</button>
+      <button type="button" class="btn btn-no"  onclick="setResponseAndSubmit('ՉԵՄ ԳԱԼԻՍ')">ՉԵՄ ԳԱԼԻՍ</button>
+      <button type="submit" id="submitBtn" style="display: none;">Ուղարկել</button>
+    </div>
+    
+    <div class="confirmation-message" id="successMessage" style="display: none;"></div>
+    <div class="confirmation-message error-message" id="errorMessage" style="display: none;"></div>
+  </form>
+  </div>
+
+    </div>
+    
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var envelope = document.getElementById('envelope');
+    var music = document.getElementById('bg-music');
+    var content = document.getElementById('content');
+    var musicBtn = document.getElementById('music-btn');
+    var isPlaying = false;
+
+    envelope.addEventListener('click', function() {
+        if (envelope.classList.contains('close')) {
+            envelope.classList.remove('close');
+            envelope.classList.add('open');
+
+        // 2 վայրկյան հետո ծրարը անհետանա
+setTimeout(function() {
+    envelope.classList.add('disappear');
+    content.classList.add("show"); // Կոնտենտը միանգամից երևա
+
+    // ծրարը DOM-ից ջնջել
+    setTimeout(function() {
+        envelope.style.display = "none";
+    }, 1000); 
+}, 2500);
+        } 
+    });
+
+    // Երաժշտության կոճակ
+    musicBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            music.pause();
+            musicBtn.src = "https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/play.png"; // քո play նկարը
+        } else {
+            music.play();
+            musicBtn.src = "https://uploads.onecompiler.io/43gpeysj6/43wkyf3xv/pause.png"; // քո pause նկարը
+        }
+        isPlaying = !isPlaying;
+    });
+});
+// Ստեղծում ենք observer
+const dressSection = document.querySelector('.dress-code');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      // ավելացնում ենք animate դասերը
+      entry.target.querySelector('.dress-title').classList.add('animate');
+      entry.target.querySelector('.dress-text').classList.add('animate');
+      entry.target.querySelectorAll('.dress-colors span').forEach(span => span.classList.add('animate'));
+      observer.unobserve(entry.target); // մեկ անգամ, հետո observer-ը հանում ենք
+    }
+  });
+}, { threshold: 0.3 }); // երբ 30% տեսանելի է դառնում
+
+observer.observe(dressSection);
+</script>
+
+</body>
+</html>
